@@ -135,10 +135,6 @@ public class TaskManager {
         }
     }
 
-
-
-
-
     public void deleteEpicById(int id) {
         epics.remove(id);
     }
