@@ -65,7 +65,7 @@ public class TaskManager {
     }
 
     public void deleteAllEpic() {
-        deleteAllSubTasks();
+        subTasks.clear();
         epics.clear();
     }
 
@@ -102,7 +102,7 @@ public class TaskManager {
         subTasks.put(id, subTask);
     }
 
-    public boolean isStatus(ArrayList<SubTask> subTasks, TaskStatus status) {
+    private boolean isStatus(ArrayList<SubTask> subTasks, TaskStatus status) {
         for (SubTask subTask : subTasks) {
             if (!subTask.getStatus().equals(status)) {
                 return false;
@@ -124,6 +124,14 @@ public class TaskManager {
         epic.setStatus(status);
     }
 
+    //  Надеюсь я правильно поняла, что требовалось...
+    public void updateInfoEpic(Epic epic, String name, String description) {
+        int epicId = epic.getId();
+        epic.setName(name);
+        epic.setDescription(description);
+        epics.put(epicId, epic);
+    }
+
     public void deleteTaskById(int id) {
         tasks.remove(id);
     }
@@ -141,8 +149,8 @@ public class TaskManager {
     public void deleteEpicById(Integer id) {
         Epic epic = getEpic(id);
         ArrayList<Integer> subTaskByEpicId = epic.getSubtasksIDs();
-        for (Integer a : subTaskByEpicId) {
-            subTasks.remove(a);
+        for (Integer subTasksId : subTaskByEpicId) {
+            subTasks.remove(subTasksId);
         }
         epic.getSubtasksIDs().clear();
         epics.remove(id);

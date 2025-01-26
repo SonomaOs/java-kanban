@@ -86,6 +86,13 @@ public class Main {
         System.out.println();
         subTasks1 = manager.getListOfSubTask();
         System.out.println(subTasks1);
+        System.out.println();
+
+
+        //  Установка нового названия и описания эпика
+        manager.updateInfoEpic(epic1, "Epic #100", "Description #100");
+        epics1 = manager.getListOfEpic();
+        System.out.println(epics1);
 
     }
 }
