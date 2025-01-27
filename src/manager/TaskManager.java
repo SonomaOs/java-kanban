@@ -124,12 +124,13 @@ public class TaskManager {
         epic.setStatus(status);
     }
 
-    //  Надеюсь я правильно поняла, что требовалось...
-    public void updateInfoEpic(Epic epic, String name, String description) {
-        int epicId = epic.getId();
-        epic.setName(name);
-        epic.setDescription(description);
-        epics.put(epicId, epic);
+    public void updateEpic(Epic epic) {
+        epic = epics.get(epic.getId());
+        if (epic == null) {
+            return;
+        }
+        epic.setName(epic.getName());
+        epic.setDescription(epic.getDescription());
     }
 
     public void deleteTaskById(int id) {
