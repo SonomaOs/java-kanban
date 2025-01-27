@@ -131,6 +131,7 @@ public class TaskManager {
         }
         epic.setName(epic.getName());
         epic.setDescription(epic.getDescription());
+        updateStatusEpic(epic);
     }
 
     public void deleteTaskById(int id) {

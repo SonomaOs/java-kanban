@@ -87,6 +87,5 @@ public class Main {
         subTasks1 = manager.getListOfSubTask();
         System.out.println(subTasks1);
         System.out.println();
-
     }
 }
