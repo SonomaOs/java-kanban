@@ -15,6 +15,18 @@ public class Task {
         this.status = TaskStatus.NEW;
     }
 
+    public Task(String name, String description, TaskStatus status) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+    }
+
+    public Task(String name, String description, int id) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+    }
+
     public String getName () {
         return name;
     }
@@ -67,6 +79,6 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, id, status);
+        return Objects.hash(name, description, status);
     }
 }
