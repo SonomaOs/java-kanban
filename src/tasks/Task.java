@@ -9,10 +9,9 @@ public class Task {
     protected int id = 0;
     protected TaskStatus status;
 
+    // Сократила конструктор
     public Task(String name, String description) {
-        this.name = name;
-        this.description = description;
-        this.status = TaskStatus.NEW;
+        this(name, description, TaskStatus.NEW);
     }
 
     public Task(String name, String description, TaskStatus status) {

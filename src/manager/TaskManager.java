@@ -3,6 +3,7 @@ package manager;
 import tasks.*;
 
 import java.util.ArrayList;
+import java.util.List;
 public interface TaskManager {
 
     // Добавление задачи
@@ -39,7 +40,7 @@ public interface TaskManager {
     void updateTask(Task task, Task newTask);
 
     // Обновление подзадачи
-    void updateSubTask(SubTask subTask, SubTask newSubTask);
+    void updateSubTask(SubTask subTask);
 
     // Обновление эпика
     void updateEpic(Epic epic);
@@ -62,5 +63,5 @@ public interface TaskManager {
     // Удаление всех эпиков
     void deleteAllEpic();
 
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 }

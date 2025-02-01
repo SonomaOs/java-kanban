@@ -53,9 +53,9 @@ public class Main {
         SubTask subTask3Update = new SubTask("Обновление подзадачи 3", "Дополнили задачу 3",
                 TaskStatus.DONE, epic2.getId());
 
-        manager.updateTask(task1, task1Update);
-        manager.updateSubTask(subTask1, subTask1Update);
-        manager.updateSubTask(subTask3, subTask3Update);
+//        manager.updateTask(task1, task1Update);
+//        manager.updateSubTask(subTask1, subTask1Update);
+//        manager.updateSubTask(subTask3, subTask3Update);
 
         //  Получение задач с изменённым статусом
         tasks1 = manager.getListOfTask();

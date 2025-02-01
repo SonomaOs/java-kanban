@@ -128,16 +128,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubTask(SubTask subTask, SubTask newSubTask) {
-        newSubTask.setId(subTask.getId());
-        subTasks.put(subTask.getId(), newSubTask);
-        Epic epic = epics.get(newSubTask.getEpicID());
-        if (epic != null) {
-            deleteSubTaskById(subTask.getId());
-            epic.addSubtaskId(newSubTask.getId());
-            epics.put(epic.getId(), epic);
-            updateStatusEpic(epic);
-        }
+    public void updateSubTask(SubTask subTask) {
+        int id = subTask.getId();
+        int epicId = subTask.getEpicID();
+        updateStatusEpic(epics.get(epicId));
+        subTasks.put(id, subTask);
     }
 
     private boolean isStatus(ArrayList<SubTask> subTasks, TaskStatus status) {
@@ -201,7 +196,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
-        return (ArrayList<Task>) historyManager.getHistory();
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
     }
 }

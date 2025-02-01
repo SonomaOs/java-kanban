@@ -2,10 +2,12 @@ package manager;
 
 public class Managers {
 
-    public static InMemoryTaskManager getDefault() {
+    // Добавила отступ и изменила тип возвращаемого значения
+    public static TaskManager getDefault() {
         return new InMemoryTaskManager();
     }
-    public static InMemoryHistoryManager getDefaultHistory() {
+
+    public static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
     }
 }
