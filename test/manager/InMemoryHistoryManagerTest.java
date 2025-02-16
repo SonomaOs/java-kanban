@@ -1,30 +1,80 @@
 package manager;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tasks.Node;
 import tasks.Task;
 import tasks.TaskStatus;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class InMemoryHistoryManagerTest {
 
+    InMemoryHistoryManager manager;
+    TaskManager taskManager;
+    protected Task task1;
+    protected Task task2;
+    protected Task task3;
+
+    @BeforeEach
+    public void beforeEach() {
+        manager = new InMemoryHistoryManager();
+        taskManager = Managers.getDefault();
+        task1 = new Task("Задача 1", "Описание задачи 1", TaskStatus.NEW);
+        task2 = new Task("Задача 2", "Описание задачи 2", TaskStatus.DONE);
+        task3 = new Task("Задача 3", "Описание задачи 3", TaskStatus.IN_PROGRESS);
+
+        task1.setId(0);
+        task2.setId(1);
+        task3.setId(2);
+    }
+
     @Test
-    void getHistory() {
-        // Внесены изменения
-        InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+    public void shouldLastVersionTaskSaveInHistoryManager() {
+        manager.add(task1);
+        manager.add(task2);
+        manager.add(task3);
+        Assertions.assertNotNull(manager.getHistory());
+    }
 
-        for (int i = 0; i < 12; i++) {
-            historyManager.add(new Task("History", "Description", TaskStatus.NEW));
-        }
+    @Test
+    public void linkLastTest() {
+        manager.add(task1);
+        manager.add(task2);
+        manager.add(task3);
+        Map<Integer, Node> history = manager.getHistoryMap();
+        Assertions.assertNull(history.get(task3.getId()).next);
+        Assertions.assertNotNull(history.get(task3.getId()).prev);
+    }
 
-        final List<Task> history = historyManager.getHistory();
-        final List<Task> expectedHistory = new ArrayList<>(history);
+    @Test
+    public void removeNodeTest() {
+        manager.add(task1);
+        manager.add(task2);
+        manager.add(task3);
+        Map<Integer, Node> history = manager.getHistoryMap();
+        Assertions.assertTrue(history.containsKey(task1.getId()));
+        Assertions.assertTrue(history.containsKey(task2.getId()));
+        Assertions.assertTrue(history.containsKey(task3.getId()));
+        manager.remove(task2.getId());
+        Assertions.assertFalse(history.containsKey(task2.getId()));
+        Assertions.assertEquals(history.get(task1.getId()).next, history.get(task3.getId()));
+        Assertions.assertEquals(history.get(task1.getId()).next, history.get(task3.getId()));
+        Assertions.assertEquals(history.get(task3.getId()).prev, history.get(task1.getId()));
+    }
 
-        assertNotNull(history);
-        assertArrayEquals(expectedHistory.toArray(), history.toArray());
+    @Test
+    public void addTaskTest() {
+        manager.add(task1);
+        manager.add(task2);
+        manager.add(task3);
+        List<Task> history = manager.getHistory();
+        Assertions.assertEquals(history.size(), 3);
+        Assertions.assertEquals(task1, history.get(0));
+        Assertions.assertEquals(task2, history.get(1));
+        Assertions.assertEquals(task3, history.get(2));
     }
 }

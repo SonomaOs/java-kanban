@@ -63,5 +63,6 @@ public interface TaskManager {
     // Удаление всех эпиков
     void deleteAllEpic();
 
+    // Получение истории
     List<Task> getHistory();
 }

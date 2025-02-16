@@ -9,7 +9,6 @@ public class Task {
     protected int id = 0;
     protected TaskStatus status;
 
-    // Сократила конструктор
     public Task(String name, String description) {
         this(name, description, TaskStatus.NEW);
     }
