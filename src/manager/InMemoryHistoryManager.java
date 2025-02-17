@@ -5,8 +5,8 @@ import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private final Map<Integer, Node> historyMap = new HashMap<>();
-    private Node head;
-    private Node tail;
+    Node head;
+    Node tail;
 
     @Override
     public void add(Task task) {

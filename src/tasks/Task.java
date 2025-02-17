@@ -1,7 +1,9 @@
 package tasks;
+
 import java.util.Objects;
 
 public class Task {
+
     protected String name;
     protected String description;
     protected int id = 0;
