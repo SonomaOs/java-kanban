@@ -1,21 +1,17 @@
 package manager;
 
 import tasks.Task;
-
-import tasks.Node;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    Map<Integer, Node> historyMap = new HashMap<>();
-    private Node head;
-    private Node tail;
+    private final Map<Integer, Node> historyMap = new HashMap<>();
+    Node head;
+    Node tail;
 
     @Override
     public void add(Task task) {
         if (task != null) {
-            if (historyMap.get(task.getId()) != null) {
-                removeNode(historyMap.get(task.getId()));
-            }
+            removeNode(historyMap.get(task.getId()));
             linkLast(task);
         }
     }
@@ -27,12 +23,12 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        removeNode(historyMap.get(id));
-        historyMap.remove(id);
+        Node node = historyMap.get(id);
+        removeNode(node);  // Удаляем ноду, если она существует
     }
 
-    public Map<Integer, Node> getHistoryMap() {
-        return historyMap;
+    public List<Node> getHistoryMap() {
+        return new ArrayList<>(historyMap.values());
     }
 
     private List<Task> getTasks() {
@@ -49,17 +45,24 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (node == null) {
             return;
         }
+
+        if (node.prev != null) {
+            node.prev.next = node.next;
+        } else {
+            head = node.next;
+            if (head != null) {
+                head.prev = null;
+            }
+        }
         if (node.next != null) {
             node.next.prev = node.prev;
         } else {
             tail = node.prev;
         }
-        if (node.prev != null) {
-            node.prev.next = node.next;
-        } else {
-            head = node.next;
-        }
+
         historyMap.remove(node.task.getId());
+        node.prev = null;
+        node.next = null;
     }
 
     private void linkLast(Task task) {
@@ -72,5 +75,17 @@ public class InMemoryHistoryManager implements HistoryManager {
             oldTail.next = newNode;
         }
         historyMap.put(task.getId(), newNode);
+    }
+
+    static class Node {
+        public Task task;
+        public Node prev;
+        public Node next;
+
+        public Node(Node prev, Task task, Node next) {
+            this.task = task;
+            this.prev = prev;
+            this.next = next;
+        }
     }
 }
