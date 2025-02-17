@@ -1,8 +1,9 @@
 package manager;
+
 import tasks.*;
+
 import java.util.ArrayList;
 import java.util.List;
-
 public interface TaskManager {
 
     // Добавление задачи
@@ -62,6 +63,5 @@ public interface TaskManager {
     // Удаление всех эпиков
     void deleteAllEpic();
 
-    // Получение истории
     List<Task> getHistory();
 }
