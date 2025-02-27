@@ -23,6 +23,17 @@ public class Task {
         this.id = id;
     }
 
+    public Task(int id, String name, String status, String description) {
+        this.id = id;
+        this.name = name;
+        this.status = TaskStatus.valueOf(status);
+        this.description = description;
+    }
+
+    public TaskType getType() {
+        return TaskType.TASK;
+    }
+
     public String getName() {
         return name;
     }
