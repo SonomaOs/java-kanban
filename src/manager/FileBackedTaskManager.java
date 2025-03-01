@@ -4,7 +4,6 @@ import tasks.*;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
@@ -12,6 +11,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public FileBackedTaskManager(File file) {
         this.file = file;
+    }
+
+    public void setCurrentId(int id) {
+        this.currentID = id;
     }
 
     @Override
@@ -35,19 +38,58 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return epic;
     }
 
-    public List<Task> getAllTasks() {
-        List<Task> allTasks = new ArrayList<>();
+    @Override
+    public void deleteAllTask() {
+        super.deleteAllTask();
+        save();
+    }
 
-        // Добавляем все задачи
-        allTasks.addAll(tasks.values());
+    @Override
+    public void deleteAllSubTasks() {
+        super.deleteAllSubTasks();
+        save();
+    }
 
-        // Добавляем все подзадачи
-        allTasks.addAll(subTasks.values());
+    @Override
+    public void deleteAllEpic() {
+        super.deleteAllEpic();
+        save();
+    }
 
-        // Добавляем все эпики
-        allTasks.addAll(epics.values());
+    @Override
+    public void updateTask(Task task, Task newTask) {
+        super.updateTask(task, newTask);
+        save();
+    }
 
-        return allTasks;
+    @Override
+    public void updateSubTask(SubTask subTask) {
+        super.updateSubTask(subTask);
+        save();
+    }
+
+    @Override
+    public void updateEpic(Epic epic) {
+        super.updateEpic(epic);
+        save();
+    }
+
+    @Override
+    public void deleteSubTaskById(Integer id) {
+        super.deleteSubTaskById(id);
+        save();
+    }
+
+    @Override
+    public void deleteEpicById(Integer id) {
+        super.deleteEpicById(id);
+        save();
+    }
+
+    @Override
+    public void deleteTaskById(int id) {
+        super.deleteTaskById(id);
+        save();
     }
 
     public void save() {
@@ -55,77 +97,47 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             writer.write("id,type,name,status,description,epic\n");
 
             for (Task task : tasks.values()) {
-                writer.write(toString(task) + "\n");
+                writer.write(TaskConverter.taskToString(task) + "\n");
             }
             for (Epic epic : epics.values()) {
-                writer.write(toString(epic) + "\n");
+                writer.write(TaskConverter.taskToString(epic) + "\n");
             }
             for (SubTask subTask : subTasks.values()) {
-                writer.write(toString(subTask) + "\n");
+                writer.write(TaskConverter.taskToString(subTask) + "\n");
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при сохранении данных", e);
         }
     }
 
-    private String toString(Task task) {
-        int epicId = (task instanceof SubTask) ? ((SubTask) task).getEpicID() : 0; // 0, если не подзадача
-        return String.join(",",
-                String.valueOf(task.getId()),
-                task.getType().toString(),
-                task.getName(),
-                task.getStatus().toString(),
-                task.getDescription(),
-                String.valueOf(epicId)
-        );
-    }
-
     public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
         try {
             List<String> lines = Files.readAllLines(file.toPath());
-            for (String line : lines) {
-                if (line.startsWith("id")) continue;
-                Task task = fromString(line);
+            if (lines.isEmpty()) return manager;
+
+            int maxId = 0;
+
+            for (int i = 1; i < lines.size(); i++) {
+                Task task = TaskConverter.stringToTask(lines.get(i));
                 if (task != null) {
-                    if (task instanceof SubTask) {
-                        manager.addSubTask((SubTask) task);
-                    } else if (task instanceof Epic) {
-                        manager.addEpic((Epic) task);
-                    } else {
-                        manager.addTask(task);
+                    maxId = Math.max(maxId, task.getId());
+                    switch (task.getType()) {
+                        case SUBTASK:
+                            manager.subTasks.put(task.getId(), (SubTask) task);
+                            break;
+                        case EPIC:
+                            manager.epics.put(task.getId(), (Epic) task);
+                            break;
+                        default:
+                            manager.tasks.put(task.getId(), task);
                     }
                 }
             }
+            manager.setCurrentId(maxId + 1);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Ошибка чтения файла: " + e.getMessage());
         }
         return manager;
-    }
-
-    private static Task fromString(String value) {
-        String[] fields = value.split(",");
-        if ((fields[0].equals("id")) && (fields.length < 6)) return null;
-        try {
-            int id = Integer.parseInt(fields[0].trim());
-            TaskType type = TaskType.valueOf(fields[1].trim());
-            String name = fields[2].trim();
-            String status = fields[3].trim();
-            String description = fields[4].trim();
-            int epicId = fields.length > 5 && !fields[5].trim().isEmpty() ? Integer.parseInt(fields[5].trim()) : -1;
-            switch (type) {
-                case TASK:
-                    return new Task(id, name, status, description);
-                case EPIC:
-                    return new Epic(id, name, status, description);
-                case SUBTASK:
-                    return new SubTask(id, name, status, description, epicId);
-                default:
-                    return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }

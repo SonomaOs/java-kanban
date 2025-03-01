@@ -15,7 +15,10 @@ public class Main {
         FileBackedTaskManager emptyManager = new FileBackedTaskManager(tempFile);
         emptyManager.save();
         FileBackedTaskManager loadedEmptyManager = FileBackedTaskManager.loadFromFile(tempFile);
-        System.out.println("Empty Manager Tasks: " + loadedEmptyManager.getAllTasks());
+        System.out.println("Empty Manager Tasks: ");
+        System.out.println(loadedEmptyManager.getListOfSubTask());
+        System.out.println(loadedEmptyManager.getListOfTask());
+        System.out.println(loadedEmptyManager.getListOfEpic());
 
         // Сохранение нескольких задач
         FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
