@@ -13,10 +13,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.file = file;
     }
 
-    public void setCurrentId(int id) {
-        this.currentID = id;
-    }
-
     @Override
     public Task addTask(Task task) {
         super.addTask(task);
@@ -124,8 +120,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     maxId = Math.max(maxId, task.getId());
                     switch (task.getType()) {
                         case SUBTASK:
-                            manager.subTasks.put(task.getId(), (SubTask) task);
-                            break;
+                            SubTask subTask = (SubTask) task;
+                            manager.subTasks.put(subTask.getId(), subTask);
+                            Epic epic = manager.epics.get(subTask.getEpicID());
+                            if (epic != null) {
+                                epic.addSubtaskId(subTask.getId());
+                            }
                         case EPIC:
                             manager.epics.put(task.getId(), (Epic) task);
                             break;
@@ -134,9 +134,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     }
                 }
             }
-            manager.setCurrentId(maxId + 1);
+            manager.currentID = maxId;
         } catch (IOException e) {
-            System.out.println("Ошибка чтения файла: " + e.getMessage());
+            throw new ManagerLoadException("Ошибка при загрузке данных из файла: " + e.getMessage(), e);
         }
         return manager;
     }
