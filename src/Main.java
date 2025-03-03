@@ -2,48 +2,37 @@ import manager.*;
 import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
-import tasks.TaskStatus;
+
+import java.io.File;
+import java.io.IOException;
 
 public class Main {
+    public static void main(String[] args) throws IOException {
+        // Создание временного файла
+        File tempFile = File.createTempFile("tasks", ".csv");
 
-    public static void main(String[] args) {
-        TaskManager manager = Managers.getDefault();
-        Task task1 = new Task("Task #1", "Task #1 description", TaskStatus.NEW);
-        Task task2 = new Task("Task #2", "Task #2 description", TaskStatus.NEW);
-        manager.addTask(task1);
-        manager.addTask(task2);
+        // Сохранение и загрузка пустого файла
+        FileBackedTaskManager emptyManager = new FileBackedTaskManager(tempFile);
+        emptyManager.save();
+        FileBackedTaskManager loadedEmptyManager = FileBackedTaskManager.loadFromFile(tempFile);
+        System.out.println("Empty Manager Tasks: ");
+        System.out.println(loadedEmptyManager.getListOfSubTask());
+        System.out.println(loadedEmptyManager.getListOfTask());
+        System.out.println(loadedEmptyManager.getListOfEpic());
 
-        Epic epic1 = new Epic("Epic #1", "Epic #1 description");
-        manager.addEpic(epic1);
+        // Сохранение нескольких задач
+        FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
+        manager.addTask(new Task(1, "Task1", "NEW", "Description task1"));
+        manager.addEpic(new Epic(3, "Epic1", "NEW", "Description epic1"));
+        manager.addSubTask(new SubTask(2, "Subtask1", "NEW", "Description subtask1", 1));
 
+        // Сохраняем задачи
+        manager.save();
 
-        SubTask subtask1 = new SubTask("SubTask #1_1", "SubTask #1_1 description", TaskStatus.NEW, epic1.getId());
-        SubTask subtask2 = new SubTask("SubTask #1_2", "SubTask #1_2 description", TaskStatus.NEW, epic1.getId());
-        manager.addSubTask(subtask1);
-        manager.addSubTask(subtask1);
-        subtask1.setStatus(TaskStatus.DONE);
-        subtask2.setStatus(TaskStatus.DONE);
-
-        manager.updateSubTask(subtask1);
-        manager.updateSubTask(subtask2);
-        System.out.println();
-        System.out.println("***** ВЫВОД ВСЕХ ЗАДАЧ *****");
-        System.out.println(manager.getListOfTask());
-        System.out.println(manager.getListOfEpic());
-        System.out.println(manager.getListOfSubTask());
-
-        manager.getTask(1);
-        manager.getTask(2);
-        manager.getTask(1);
-        manager.getTask(2);
-        manager.getEpic(3);
-        manager.getSubTask(4);
-        manager.getSubTask(5);
-        manager.getSubTask(4);
-        manager.getSubTask(5);
-        System.out.println();
-        System.out.println("***** ВЫВОД ИСТОРИИ *****");
-        System.out.println(manager.getHistory());
-        System.out.println();
+        // Загрузка нескольких задач
+        FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
+        System.out.println("Loaded Manager Tasks: " + loadedManager.getListOfTask());
+        System.out.println("Loaded Manager Epics: " + loadedManager.getListOfEpic());
+        System.out.println("Loaded Manager Subtasks: " + loadedManager.getListOfSubTask());
     }
 }

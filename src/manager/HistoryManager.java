@@ -8,6 +8,5 @@ public interface HistoryManager {
 
     void remove(int id);
 
-    // Получение истории
     List<Task> getHistory();
 }
